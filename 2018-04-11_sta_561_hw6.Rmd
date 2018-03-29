@@ -1,0 +1,93 @@
+---
+title: "STA 561 HW6 (I never want to see Neural Networks again)"
+author: "Daniel Truver"
+date: "3/26/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(dplyr)
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+#### (1.1) Neural Networks and Universal Approximation Theorem
+
+Full disclosure: I don't like Neural Networks, I don't want to use them, I don't understand them, and there's not much about them in the lecture notes. That said, please enjoy the following train fire of a homework problem.
+
+##### (a) What and why?
+
+As far as I can tell from the literature, all neural networks are a lot of guesswork followed by justification with no real indication of the creation process for the NN. So, here is my approximation to the bump which I just thought up in a very methodical manner and arrived at directly with no intermediary steps or cursing.
+
+```{r}
+sigmoid = function(x){
+  1/(1 + exp(-x))
+}
+bump1 = function(x){
+  bump = 0.4 <= x & x <= 0.6
+  y = x
+  y[bump] = 1
+  y[!bump] = 0
+  y
+}
+NN = function(x){
+  w = 256
+  neuron1 = sigmoid(w*(x-0.4))
+  neuron2 = sigmoid(w*(x-0.6))
+  o = neuron1 - neuron2
+  o
+}
+x1 = seq(0,1,length.out = 500)
+NN1 = NN(x1)
+truebump = bump1(x1)
+ggplot(data = data.frame(x = x1, NN = NN1, truth = truebump), aes(x = x)) +
+  geom_line(aes(y = truth, color = "truth")) +
+  geom_line(aes(y = NN, color = "NN")) +
+  ggtitle("Looks Good...I think?")
+```
+
+Wow! And it has exactly half the neurons of my brain. See attached drawing 1.
+
+##### (b) Parameters
+
+(1) The weights determine the steepness of the bump. (2) The bias determines the location. (3) The height is just the height of the activation function, the sigmoid; we would need a multiple of the sigmoid to change the height.
+
+#### (1.2) The suffering continues
+
+##### (a) Behold! Another neural network.
+
+```{r}
+NN2 = function(x_1, x_2){
+  w = 256
+  neuron1 = sigmoid(w*(x_1-0.3))
+  neuron2 = sigmoid(w*(x_1-0.7))
+  o = neuron1 - neuron2
+  o
+}
+x1 = seq(0,1, length.out = 100)
+x2 = seq(0,1, length.out = 100)
+y = outer(x1, x2, NN2)
+lattice::wireframe(y, drape = TRUE, xlab = "x1", ylab = "x2")
+```
+
+See attached drawing 2. 
+
+##### (b) Tower
+
+```{r}
+NN3 = function(x_1, x_2){
+  w = 256
+  neuron1 = sigmoid(w*(x_1-0.4))
+  neuron2 = sigmoid(w*(x_1-0.6))
+  o_1 = neuron1 - neuron2
+  neuron3 = sigmoid(w*(x_2-0.4))
+  neuron4 = sigmoid(w*(x_2-0.6))
+  o_2 = neuron3 - neuron4
+  sigmoid(w*(o_1 + o_2 - 2))
+}
+x1 = seq(0,1, length.out = 100)
+x2 = seq(0,1, length.out = 100)
+y = outer(x1, x2, NN3)
+lattice::wireframe(y, drape = TRUE, xlab = "x1", ylab = "x2")
+```
