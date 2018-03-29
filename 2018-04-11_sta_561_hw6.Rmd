@@ -84,7 +84,8 @@ NN3 = function(x_1, x_2){
   neuron3 = sigmoid(w*(x_2-0.4))
   neuron4 = sigmoid(w*(x_2-0.6))
   o_2 = neuron3 - neuron4
-  sigmoid(w*(o_1 + o_2 - 2))
+  o = 2*sigmoid(w*(o_1 + o_2 - 2))
+  o
 }
 x1 = seq(0,1, length.out = 100)
 x2 = seq(0,1, length.out = 100)
