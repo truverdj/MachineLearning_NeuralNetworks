@@ -92,3 +92,35 @@ x2 = seq(0,1, length.out = 100)
 y = outer(x1, x2, NN3)
 lattice::wireframe(y, drape = TRUE, xlab = "x1", ylab = "x2")
 ```
+
+See attached drawing 3.
+
+##### (c) Tower function approximation 
+
+If we consider error measured by the $L_1$ metric and agree that the gradient exists in both directions at every point, then this approximation is familiar. It is the approximation of the Riemann integral for functions of 2 variables. The bases of the towers form the partition of the unit square. Let $(x_i,y_i)$ denote the center of the tower $i$ and let the height of each tower be $f(x_i,y_i)$. Additionally, denote the region covered by each tower's base to be $A_i$ and the area of the base to be $\Delta A_i$. Then, the error for each tower is
+$$
+\begin{aligned}
+\int_{A_i}|f(x,y) - f(x_i,y_i)|~dxdy 
+&\leq \int_{A_i} \left| \frac{t}{n} \right|~dxdy \\
+&= \frac{|t|}{n}\Delta A_i \\
+&= \frac{|t|}{n}\frac{1}{n^2} \\
+&= \frac{|t|}{n^3}\\
+\text{and we want} ~ \frac{|t|}{n^3} &< \epsilon
+\end{aligned}
+$$
+where the first inequality is due to the known maximum change in the function and the length of the interval over which that change occurs ($n$ tower centers evenly spaced give each a square base of side length $1/n$).
+
+So, by taking 
+$$
+n > \left(\frac{|t|}{\epsilon}\right)^{1/3}.
+$$
+
+So, when we take $n^2$ towers, and want to bound the total error $\delta$, then we need to bound
+$$
+n^2 \frac{|t|}{n^3} < \delta,
+$$
+which we can achieve with
+$$
+n > \frac{|t|}{\delta}.
+$$
+As $t$ increases, we will need more and more tower functions, therefore more and more neurons, to achieve our desired bound.
