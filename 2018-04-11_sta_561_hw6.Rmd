@@ -124,3 +124,7 @@ $$
 n > \frac{|t|}{\delta}.
 $$
 As $t$ increases, we will need more and more tower functions, therefore more and more neurons, to achieve our desired bound.
+
+##### (2) EM (Laundry?)
+
+Machine one is broken $\theta_1$ proportion of the time (that you try to use it?) and machine 2 is broken $\theta_2$ proportion of the time (that you try to use it?). So, it's Bernoulli whether the machine take your money and starts or takes your money and starts. 
