@@ -138,3 +138,41 @@ $\theta_2$ = proportion of failed attempts on machine 2.
 Which machine we choose is Bernoulli(0.50).
 Number of failures on machine 1 in a single day is Binomial($n,\theta_1$).
 Number of failures on machine 2 in a single day is Binomial($n,\theta_1$).
+Let $X_1,\dots, X_m \in \{1,\dots,n\}$ be the number of failed attempts on each day. 
+Let $Z_1,\dots, Z_m \in \{1,2\}$ be the machine used on each day (unobserved).
+Let $\theta = \{\theta_1, \theta_2\}$.
+
+First note that
+$$
+\begin{aligned}
+P(X_i = x_i, Z_i = k\mid \theta) 
+&= P(X_i = x_i\mid Z_i = k, \theta)P(Z_i = k\mid \theta) \\
+&= \text{binom}(x_i;n, \theta_k)(0.50)
+\end{aligned}
+$$
+where we obtain the last equality by noting that which machine we used on day $i$ was completely random.
+
+Then our auxillary function is, at time $t$,
+$$
+\begin{aligned}
+A(\theta, \theta^{(t)}) 
+&= \sum_i\sum_k P(z_i = k\mid x_i, \theta^{(t)}) \log\frac{P(X_i = x_i, Z_i = k\mid\theta)}{P(z_i = k\mid x_i, \theta^{(t)})}\\
+&= \sum_i\sum_k \frac{\text{binom}(x_i;n, \theta_k^{(t)})(0.50)}{\text{binom}(x_i;n, \theta_1^{(t)})(0.50) + \text{binom}(x_i;n, \theta_2^{(t)})(0.50)} \log\frac{\text{binom}(x_i;n, \theta_k)(0.50)}{\frac{\text{binom}(x_i;n, \theta_k^{(t)})(0.50)}{\text{binom}(x_i;n, \theta_1^{(t)})(0.50) + \text{binom}(x_i;n, \theta_2^{(t)})(0.50)}}\\
+\end{aligned}
+$$
+
+For simplicity, let 
+$$
+\frac{\text{binom}(x_i;n, \theta_k^{(t)})(0.50)}{\text{binom}(x_i;n, \theta_1^{(t)})(0.50) + \text{binom}(x_i;n, \theta_2^{(t)})(0.50)} 
+= \gamma_{ik}
+$$
+then 
+$$
+A(\theta, \theta^{(t)}) = \sum_i\sum_k \gamma_{ik} \log\frac{P(X_i = x_i, Z_i = k\mid\theta)}{\gamma_{ik}}.
+$$
+
+For our next step, set 
+$$
+\theta^{(t+1)} = \arg\max_\theta A(\theta, \theta^{(t)}).
+$$
+##### (b) A Test (once we have data)
