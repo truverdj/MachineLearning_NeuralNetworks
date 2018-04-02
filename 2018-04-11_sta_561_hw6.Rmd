@@ -163,21 +163,57 @@ $$
 
 For simplicity, let 
 $$
-\frac{\text{binom}(x_i;n, \theta_k^{(t)})(0.50)}{\text{binom}(x_i;n, \theta_1^{(t)})(0.50) + \text{binom}(x_i;n, \theta_2^{(t)})(0.50)} 
+\frac{\text{binom}(x_i;n, \theta_k^{(t)})}{\text{binom}(x_i;n, \theta_1^{(t)}) + \text{binom}(x_i;n, \theta_2^{(t)})} 
 = \gamma_{ik}
 $$
 then 
 $$
-A(\theta, \theta^{(t)}) = \sum_i\sum_k \gamma_{ik} \log\frac{P(X_i = x_i, Z_i = k\mid\theta)}{\gamma_{ik}}.
+A(\theta, \theta^{(t)}) = \sum_i\sum_k \gamma_{ik} \log\frac{\text{binom}(x_i;n, \theta_k)(0.50)}{\gamma_{ik}}.
 $$
 
 For our next step, set 
 $$
 \theta^{(t+1)} = \arg\max_\theta A(\theta, \theta^{(t)}).
 $$
-##### (b) A Test (once we have data)
+##### (b) A Test (simulated data)
 
-We have no data...
+```{r, cache=TRUE}
+theta = list("1" = 0.8, "2" = 0.3)
+m = 6 
+n = 100
+failedAttempts = rep(NA, 6)
+set.seed(2018)
+for (j in 1:m){
+  machine = sample(c(1,2), size = 1)
+  p = theta[[machine]]
+  failedAttempts[j] = rbinom(1, n, p)
+}
+failedAttempts
+theta.t = list()
+theta.t[[1]] = c(mean(failedAttempts[1:3]/100), mean(failedAttempts[4:6]/100))
+for (t in 1:50){
+  gamma_ik =  c(dbinom(failedAttempts, n, theta.t[[t]][1]), 
+                dbinom(failedAttempts, n, theta.t[[t]][2]))/
+    rep(dbinom(failedAttempts, n, theta.t[[t]][1]) + dbinom(failedAttempts, n, theta.t[[t]][2]), 2)
+  A = function(theta_1, theta_2){
+    sum(gamma_ik * c(log(0.5*dbinom(failedAttempts,n,theta_1)), 
+                     log(0.5*dbinom(failedAttempts,n,theta_2))
+                     )
+    )
+  }
+  gridpts = 500
+  x1 = seq(0,1,length.out = gridpts)
+  x2 = seq(0,1,length.out = gridpts)
+  gridMat = matrix(NA, ncol = gridpts, nrow = gridpts)
+  for (i in seq_along(x1)) {
+    for(j in seq_along(x2)){
+      gridMat[i,j] = A(x1[i],x2[j])
+    }
+  }
+  nextTheta = which(gridMat == max(gridMat), arr.ind = TRUE)
+  theta.t[[t+1]] = c(x1[nextTheta[1]], x2[nextTheta[2]])
+}
+```
 
 #### (3)
 
