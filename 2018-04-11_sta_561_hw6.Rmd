@@ -127,4 +127,14 @@ As $t$ increases, we will need more and more tower functions, therefore more and
 
 ##### (2) EM (Laundry?)
 
-Machine one is broken $\theta_1$ proportion of the time (that you try to use it?) and machine 2 is broken $\theta_2$ proportion of the time (that you try to use it?). So, it's Bernoulli whether the machine take your money and starts or takes your money and starts. 
+Machine one is broken $\theta_1$ proportion of the time (that you try to use it?) and machine 2 is broken $\theta_2$ proportion of the time (that you try to use it?). So, it's Bernoulli whether the machine take your money and starts or takes your money and does not start. It's also Bernoulli (0.50) which machine you have to try when you get to the laundry, but the facilities fee on your tuition is always the same. At this point, instead of visiting the laundry $m$ times and having to risk my money $n$ times, I'd just go to Duke pond with some dish soap and give it my best. You'd think by this point someone from the engineering department would have made themselves useful and fixed the damn machines. Also, if we didn't write down which machine we used each time, we deserve to be dirty. 
+
+##### (a) Using EM algorithm 
+
+$m$ = number of days we vistited the laundry.
+$n$ = number of laundry attempts in a single day.
+$\theta_1$ = proportion of failed attempts on machine 1.
+$\theta_2$ = proportion of failed attempts on machine 2. 
+Which machine we choose is Bernoulli(0.50).
+Number of failures on machine 1 in a single day is Binomial($n,\theta_1$).
+Number of failures on machine 2 in a single day is Binomial($n,\theta_1$).
