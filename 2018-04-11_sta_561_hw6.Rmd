@@ -176,3 +176,12 @@ $$
 \theta^{(t+1)} = \arg\max_\theta A(\theta, \theta^{(t)}).
 $$
 ##### (b) A Test (once we have data)
+
+We have no data...
+
+#### (3)
+
+```{r, echo=FALSE}
+df = read.csv("data.csv")
+colnames(df) = c("x", "y")
+```
