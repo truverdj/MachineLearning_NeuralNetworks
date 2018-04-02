@@ -215,9 +215,25 @@ for (t in 1:50){
 }
 ```
 
-#### (3)
+Well, the algorithm pretty much converged in one go because we chose our starting points by inspection of the data. We saw there were two groups and chose the starting points to be the means of the two groups.
 
-```{r, echo=FALSE}
+```{r}
+df = t(as.data.frame(theta.t))
+rownames(df) = NULL; colnames(df) = c("theta_1", "theta_2")
+ggplot(data.frame(df), aes(x = theta_1, y = theta_2)) +
+  geom_jitter(width = .02, height = .02) +
+  xlim(0,1) + ylim(0,1)
+```
+
+The points are jittered just to show there are multiple ones clustered together.
+
+So, yeah...always pick your starting points in an intelligent way?
+
+#### (3) Clustering
+
+```{r}
 df = read.csv("data.csv")
 colnames(df) = c("x", "y")
 ```
+
+##### (a) K-means
