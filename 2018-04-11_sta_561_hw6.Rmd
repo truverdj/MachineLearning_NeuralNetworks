@@ -237,3 +237,48 @@ colnames(df) = c("x", "y")
 ```
 
 ##### (a) K-means
+
+```{r}
+euclid = function(x1, y1, x2, y2){
+  sqrt((x2-x1)^2 + (y2-y1)^2)
+}
+kmeans = function(data, clusters = 2, epsilon = 0.01){ # data should live in unit square
+  startingPts = lapply(1:clusters, function(k){
+    runif(2)
+  })
+  TSPmatrix = matrix(NA, nrow = nrow(data), ncol = clusters)
+  for (i in 1:length(startingPts)){
+    TSPmatrix[,i] = euclid(data$x, data$y, startingPts[[i]][1], startingPts[[i]][2])
+  }
+  assignment = apply(TSPmatrix, 1, which.min)
+  newdata = cbind(data, assignment)
+  convergence = 1
+  while(convergence > epsilon){
+    which.clusters = sort(unique(newdata$assignment))
+    newCenters = lapply(which.clusters, function(k){
+      mean_x = newdata %>%
+        filter(assignment == k) %>%
+        .$x %>%
+        mean()
+      mean_y = newdata %>%
+        filter(assignment == k) %>%
+        .$y %>%
+        mean()
+      c(mean_x, mean_y)
+    })
+    for (i in 1:length(newCenters)){
+      TSPmatrix[,i] = euclid(newdata$x, newdata$y, newCenters[[i]][1], newCenters[[i]][2])
+    }
+    assignment = apply(TSPmatrix, 1, which.min)
+    newdata = cbind(data, assignment)
+    moves = rep(NA, length(newCenters))
+    for (j in 1:length(newCenters)){
+      moves[j] = euclid(startingPts[[j]][1], startingPts[[j]][2],
+                        newCenters[[j]][1], newCenters[[j]][2])
+    }
+    convergence = max(moves)
+    startingPts = newCenters
+  }
+  return(newdata)
+}
+```
