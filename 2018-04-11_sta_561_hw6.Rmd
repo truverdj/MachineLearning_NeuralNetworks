@@ -242,7 +242,7 @@ colnames(df) = c("x", "y")
 euclid = function(x1, y1, x2, y2){
   sqrt((x2-x1)^2 + (y2-y1)^2)
 }
-kmeans = function(data, clusters = 2, epsilon = 0.01){ # data should live in unit square
+k.means = function(data, clusters = 2, epsilon = 0.01){ # data should live in unit square
   startingPts = lapply(1:clusters, function(k){
     runif(2)
   })
@@ -279,6 +279,63 @@ kmeans = function(data, clusters = 2, epsilon = 0.01){ # data should live in uni
     convergence = max(moves)
     startingPts = newCenters
   }
-  return(newdata)
+  mean.ks = list()
+  for (k in 1:length(unique(newdata$assignment))){
+    mean.ks[[k]] = c(newdata %>% filter(assignment == k) %>% .$x %>% mean(),
+                     newdata %>% filter(assignment == k) %>% .$y %>% mean())
+  }
+  return(list("clusters" = newdata, "means" = mean.ks))
 }
 ```
+
+##### (b) Hierarchical Agglomerative Clustering
+
+```{r}
+euclidVec = function(pt1, pt2){
+  sqrt( (pt1[1]-pt2[1])^2 + (pt1[2]-pt2[2])^2 )
+}
+hier.agglo = function(data, clusters = 2){
+  currentClusters = cbind(data, cluster = 1:nrow(data))
+  num_cluster = length(unique(currentClusters$cluster))
+  TSPmatrix = matrix(NA, nrow = nrow(data), ncol = nrow(data))
+  for (i in 1:nrow(data)){
+    for(j in 1:nrow(data)){
+      TSPmatrix[i,j] = euclidVec(pt1 = data[i,], pt2 = data[j,])
+    }
+  }
+  diag(TSPmatrix) = 1
+  while(num_cluster > clusters){
+    closestPts = which(TSPmatrix == min(TSPmatrix), arr.ind = TRUE)[1,]
+    merging.clusters = currentClusters$cluster[closestPts]
+    new.cluster = min(merging.clusters)
+    old.cluster = max(merging.clusters)
+    currentClusters$cluster[currentClusters$cluster == old.cluster] = new.cluster
+    TSPmatrix[closestPts[1],closestPts[2]] = 1
+    TSPmatrix[closestPts[2],closestPts[1]] = 1
+    num_cluster = length(unique(currentClusters$cluster))
+  }
+  return(currentClusters)
+}
+```
+
+##### (c) Getting the Results
+
+```{r, cache=TRUE}
+kmeans.df = k.means(data = df, clusters = 2)
+agglo.df = hier.agglo(data = df, clusters = 2)
+ggplot(data = kmeans.df, aes(x = x, y = y)) +
+  geom_point(aes(color = assignment))
+ggplot(data = agglo.df, aes(x = x, y = y)) +
+  geom_point(aes(color = cluster))
+```
+
+The hierarchical model seems to perform better. This is due to the process of fitting the clusters. One takes into acount distances between individual points whereas the other is based on distance to a center that may not be a point in the data.
+
+##### (d) Pre-Process Improvements
+
+If we are given the EDA, as we have in figure 3, I can think of at least one thing. Bring in the third dimension. In this case, use 
+$$
+z = f(x,y) = -a\left((x-0.5)^2+(y-0.5)^2\right).
+$$
+
+This would raise the center points above the plane (height controlled by $a$) and make the clusters distinct when running the k-means alforithm in $\mathbb{R}^3$.
