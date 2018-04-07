@@ -323,7 +323,7 @@ hier.agglo = function(data, clusters = 2){
 ```{r, cache=TRUE}
 kmeans.df = k.means(data = df, clusters = 2)
 agglo.df = hier.agglo(data = df, clusters = 2)
-ggplot(data = kmeans.df, aes(x = x, y = y)) +
+ggplot(data = kmeans.df$clusters, aes(x = x, y = y)) +
   geom_point(aes(color = assignment))
 ggplot(data = agglo.df, aes(x = x, y = y)) +
   geom_point(aes(color = cluster))
